@@ -16,3 +16,30 @@ See Documentation/00-INDEX for a list of what is contained in each file.
 Please read the Documentation/process/changes.rst file, as it contains the
 requirements for building and running the kernel, and information about
 the problems which may result by upgrading your kernel.
+
+============
+
+Script used to compile the kernel:
+
+
+export ARCH=arm64
+export SUBARCH=arm64
+export DTC_EXT=/home/disty/bin/dtc
+
+echo CLEAN OUT
+rm out -rf
+mkdir out
+
+echo DEFCONFIG
+make  O=out ARCH=arm64 toco_user_defconfig #$DEFCONFIG
+
+echo MENUCONFIG
+make O=out menuconfig
+
+PATH="/home/disty/Apps/android/llvm-Snapdragon_LLVM_for_Android_8.0/prebuilt/linux-x86_64/bin:/home/disty/Apps/android/aarch64-linux-android-4.9/bin:${PATH}" \
+make -j$(nproc --all) O=out \
+                      ARCH=arm64 \
+                      CC=clang \
+                      CLANG_TRIPLE=aarch64-linux-gnu- \
+                      CROSS_COMPILE=aarch64-linux-android- | tee kernel.log
+
